@@ -3,11 +3,11 @@ import time
 import sys 
 
 
-conn = sqlite3.connect('C:\\Users\\me\\Documents\\Python\\Information Database\\userInfo.db')
+conn = sqlite3.connect('C:\\Users\\me\\Documents\\Python\\Information Database\\Datainfo.db')
 
 cur = conn.cursor()
 
-cur.execute('''CREATE TABLE IF NOT EXISTS userInfo (information,password,username)''')
+cur.execute('''CREATE TABLE IF NOT EXISTS Datainfo (password,username,information)''')
 
 conn.commit()
 
@@ -33,6 +33,7 @@ def sign_in():
     global password_input 
     global username_input
     global information
+    global information_input
     global sign_in
 
     print("Welcome to Datainfo, you will need to create a username and password in order to use this service.")
@@ -53,12 +54,12 @@ def sign_in():
     while information == '':
          information_input = input("Invalid Input! What information do you want to store!")
 
-    cur.execute("INSERT INTO userInfo VALUES('I like to eat food haha','dev21','DevParikh')")
-    cur.execute("INSERT INTO userInfo VALUES('Whats up ','john31','johndoe')")
-    cur.execute("INSERT INTO userInfo VALUES('avergers go!','avengersinfinitywar','avengers')")
-    cur.execute("INSERT INTO userInfo VALUES('stark industries','ironman27','mrstark')")
+    cur.execute("INSERT INTO Datainfo VALUES('dev21','DevParikh','I like to eat food haha')")
+    cur.execute("INSERT INTO Datainfo  VALUES('john31','johndoe','Whats up ')")
+    cur.execute("INSERT INTO Datainfo VALUES('avengersinfinitywar','avengers','avergers go!')")
+    cur.execute("INSERT INTO Datainfo VALUES('ironman27','mrstark','stark industries')")
     conn.commit()
-    cur.execute("SELECT rowid FROM userInfo WHERE username = (?)", (username_input,))
+    cur.execute("SELECT rowid FROM Datainfo WHERE username = (?)", (username_input,))
     conn.commit()
     data = cur.fetchall()
 
@@ -73,24 +74,25 @@ def sign_in():
 def gathering_data():
     global userQuery
     username_input = input("What is your username?")
-    cur.execute("SELECT rowid FROM userInfo WHERE username = (?)", (username_input))
+    cur.execute("SELECT rowid FROM Datainfo WHERE username = (?)", (username_input,))
     username_data = cur.fetchall()
 
-    if len(username) == 0:
-        print("You are not singed up for Datainfo, goodbye!")
+    if len(username_input) == 0:
+        print("You are not signed up for Datainfo, goodbye!")
         time.sleep(3)
         sys.exit()
     
     trypassword = input("Enter your password!")
-    cur.execute("SELECT password FROM userInfo WHERE username = (?)", (username_input))
-    password_data = cur.fetchall()
+    
+    cur.execute("SELECT password FROM Datainfo WHERE username = (?)", (username_input,))
+    password_data = cur.fetchall()[0][0]
 
-    while password_data != [(trypassword)]:
-        print("This is not the correct password!")
-        trypassword = input("Invalid Input! Enter your password: ")
+    while password_data != trypassword:
+        trypassword = input("Incorrect Password! Enter your password!\n")
+
 
     
-    cur.execute("SELECT information, password, username FROM userInfo WHERE username = (?)", (username_input))
+    cur.execute("SELECT information, password, username FROM Datainfo WHERE username = (?)", (username_input,))
     userQuery = cur.fetchall()
 def viewing_info():
     gathering_data()
@@ -100,7 +102,7 @@ def viewing_info():
     sys.exit()
 
 def creating_users():
-    cur.execute("INSERT INTO userInfo VALUES (?,?,?)", (information,password, username_input))
+    cur.execute("INSERT INTO Datainfo VALUES (?,?,?)", (password_input, username_input,information_input,))
     conn.commit()
 
 
@@ -114,4 +116,5 @@ elif command_input == 'v':
 else:
     print("An error has occured!")
     sys.exit()
+
 
